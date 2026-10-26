@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080E1B"/>
+      <stop offset="100%" stop-color="#141C3C"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1100" cy="80" r="330" fill="url(#g1)"/>
+  <circle cx="720" cy="620" r="300" fill="url(#g2)"/>
+
+  <rect x="76" y="62" width="64" height="8" rx="4" fill="#6366F1"/>
+  <text x="156" y="74" font-family="Consolas, 'Courier New', monospace" font-size="19" letter-spacing="1" fill="#94A9C6">AIO-LVC · v0.4.0</text>
+
+  <text x="76" y="214" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="66" font-weight="700" fill="#FFFFFF">一条龙</text>
+  <text x="76" y="294" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="66" font-weight="700" fill="#7DD3FC">实时变声</text>
+  <text x="78" y="368" font-family="Consolas, 'Courier New', monospace" font-size="24" fill="#B2C3DD">All-In-One Live Vocal Conversion</text>
+  <text x="78" y="408" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="22" fill="#8FA6C6">投素材 → 清洗 → 少样本训练 → 开麦即用</text>
+
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" fill="#D6E2FA">
+    <rect x="78" y="466" width="112" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#828FF0" stroke-opacity="0.55"/>
+    <text x="100" y="493">Demucs</text>
+    <rect x="202" y="466" width="86" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#828FF0" stroke-opacity="0.55"/>
+    <text x="224" y="493">RVC</text>
+    <rect x="300" y="466" width="126" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#828FF0" stroke-opacity="0.55"/>
+    <text x="322" y="493">Electron</text>
+    <rect x="438" y="466" width="118" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#828FF0" stroke-opacity="0.55"/>
+    <text x="460" y="493">FastAPI</text>
+  </g>
+
+  <path d="M700 318 C 730 214, 762 418, 794 300 S 856 196, 888 322 S 950 424, 982 302 S 1044 232, 1076 318"
+        fill="none" stroke="#38BDF8" stroke-width="8" stroke-linecap="round" stroke-opacity="0.95"/>
+  <path d="M700 318 C 736 268, 768 366, 800 312 S 862 250, 894 326 S 956 372, 988 310 S 1050 274, 1076 318"
+        fill="none" stroke="#818CF8" stroke-width="4" stroke-linecap="round" stroke-opacity="0.7"/>
+
+  <rect x="1006" y="150" width="64" height="112" rx="32" fill="#10203A" stroke="#818CF8" stroke-width="3"/>
+  <path d="M978 208 A 60 60 0 0 0 1098 208" fill="none" stroke="#818CF8" stroke-width="6" stroke-linecap="round"/>
+  <line x1="1038" y1="268" x2="1038" y2="310" stroke="#818CF8" stroke-width="6" stroke-linecap="round"/>
+  <line x1="1010" y1="310" x2="1066" y2="310" stroke="#818CF8" stroke-width="6" stroke-linecap="round"/>
+  <text x="978" y="352" font-family="Consolas, 'Courier New', monospace" font-size="17" letter-spacing="1" fill="#A9BEE0">LOW LATENCY</text>
+</svg>

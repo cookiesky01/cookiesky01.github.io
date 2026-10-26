@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080E1B"/>
+      <stop offset="100%" stop-color="#161F3A"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#34D399" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1090" cy="90" r="330" fill="url(#g1)"/>
+  <circle cx="720" cy="620" r="300" fill="url(#g2)"/>
+
+  <rect x="76" y="62" width="64" height="8" rx="4" fill="#8B5CF6"/>
+  <text x="156" y="74" font-family="Consolas, 'Courier New', monospace" font-size="18" letter-spacing="1" fill="#94A9C6">ENHANCEDIKT · KNOWLEDGE TRACING</text>
+
+  <text x="76" y="214" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="62" font-weight="700" fill="#FFFFFF">双级知识状态</text>
+  <text x="76" y="292" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="62" font-weight="700" fill="#6EE7B7">知识追踪实验</text>
+  <text x="78" y="368" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="25" fill="#B2C3DD">在 DIKT 之上，把技能级与全局状态一起建模</text>
+
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" fill="#DCD9FA">
+    <rect x="78" y="432" width="110" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#9B8BE8" stroke-opacity="0.55"/>
+    <text x="100" y="459">PyTorch</text>
+    <rect x="200" y="432" width="150" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#9B8BE8" stroke-opacity="0.55"/>
+    <text x="222" y="459">Transformer</text>
+    <rect x="362" y="432" width="94" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#9B8BE8" stroke-opacity="0.55"/>
+    <text x="384" y="459">RoPE</text>
+    <rect x="468" y="432" width="98" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#9B8BE8" stroke-opacity="0.55"/>
+    <text x="490" y="459">ALiBi</text>
+  </g>
+
+  <g stroke="#8B5CF6" stroke-opacity="0.28" stroke-width="1.5">
+    <line x1="812" y1="180" x2="900" y2="180"/><line x1="812" y1="180" x2="900" y2="262"/>
+    <line x1="900" y1="180" x2="988" y2="262"/><line x1="900" y1="262" x2="988" y2="262"/>
+    <line x1="900" y1="180" x2="988" y2="180"/><line x1="900" y1="262" x2="988" y2="344"/>
+    <line x1="988" y1="180" x2="1076" y2="262"/><line x1="988" y1="262" x2="1076" y2="262"/>
+    <line x1="988" y1="344" x2="1076" y2="262"/><line x1="1076" y1="262" x2="1140" y2="262"/>
+    <line x1="812" y1="262" x2="900" y2="262"/><line x1="900" y1="344" x2="988" y2="262"/>
+    <line x1="900" y1="262" x2="988" y2="180"/>
+  </g>
+  <g fill="#8B5CF6" fill-opacity="0.95">
+    <circle cx="812" cy="180" r="10"/><circle cx="812" cy="262" r="10"/>
+    <circle cx="900" cy="180" r="11"/><circle cx="900" cy="262" r="11"/><circle cx="900" cy="344" r="11"/>
+    <circle cx="988" cy="180" r="12"/><circle cx="988" cy="262" r="12"/><circle cx="988" cy="344" r="12"/>
+    <circle cx="1076" cy="262" r="11"/>
+  </g>
+  <circle cx="1140" cy="262" r="12" fill="#34D399"/>
+
+  <rect x="786" y="440" width="342" height="56" rx="14" fill="#10203A" stroke="#34D399" stroke-width="2"/>
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" font-weight="600" fill="#D6F5E9" text-anchor="middle">
+    <text x="884" y="475">技能级状态</text>
+    <text x="957" y="475" fill="#9FB3CE">+</text>
+    <text x="1030" y="475">全局状态</text>
+  </g>
+</svg>

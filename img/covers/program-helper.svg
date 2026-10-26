@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080E1B"/>
+      <stop offset="100%" stop-color="#132340"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#4F8CFF" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#4F8CFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1090" cy="70" r="330" fill="url(#g1)"/>
+  <circle cx="700" cy="620" r="300" fill="url(#g2)"/>
+
+  <rect x="76" y="62" width="64" height="8" rx="4" fill="#4F8CFF"/>
+  <text x="156" y="74" font-family="Consolas, 'Courier New', monospace" font-size="19" letter-spacing="1" fill="#94A9C6">PROGRAM-HELPER · EDUCATION</text>
+
+  <text x="76" y="214" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="64" font-weight="700" fill="#FFFFFF">四个学习伙伴</text>
+  <text x="76" y="296" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="64" font-weight="700" fill="#93C5FD">一个聊天框</text>
+  <text x="78" y="372" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="27" fill="#B2C3DD">多智能体辅助初中编程教学设计与实践</text>
+
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" fill="#D2E2F8">
+    <rect x="78" y="432" width="96" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="100" y="459">Coze</text>
+    <rect x="186" y="432" width="136" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="208" y="459">多智能体</text>
+    <rect x="334" y="432" width="110" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="356" y="459">SSE</text>
+    <rect x="456" y="432" width="110" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="478" y="459">Vercel</text>
+  </g>
+
+  <g stroke="#4F8CFF" stroke-opacity="0.5" stroke-width="2">
+    <line x1="940" y1="318" x2="812" y2="182"/>
+    <line x1="940" y1="318" x2="1078" y2="182"/>
+    <line x1="940" y1="318" x2="812" y2="456"/>
+    <line x1="940" y1="318" x2="1078" y2="456"/>
+  </g>
+  <g fill="#12233F" stroke="#4F8CFF" stroke-width="2">
+    <circle cx="802" cy="176" r="56"/>
+    <circle cx="1088" cy="176" r="56"/>
+    <circle cx="802" cy="462" r="56"/>
+    <circle cx="1088" cy="462" r="56"/>
+  </g>
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" font-weight="600" fill="#E1EEFF" text-anchor="middle">
+    <text x="802" y="183">讲解员</text>
+    <text x="1088" y="183">调试伙伴</text>
+    <text x="802" y="469">项目教练</text>
+    <text x="1088" y="469">小码</text>
+  </g>
+  <circle cx="940" cy="318" r="74" fill="#10203A" stroke="#22D3EE" stroke-width="3"/>
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="21" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+    <text x="940" y="312">初中编程</text>
+    <text x="940" y="342">小助手</text>
+  </g>
+</svg>

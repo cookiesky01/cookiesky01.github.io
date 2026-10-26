@@ -4,6 +4,80 @@
   
     
     <entry>
+      <title>初中编程学习小助手</title>
+      <link href="/2026/10/19/program-helper/"/>
+      <url>/2026/10/19/program-helper/</url>
+      
+        <content type="html"><![CDATA[<h1 id="初中编程学习小助手"><a href="#初中编程学习小助手" class="headerlink" title="初中编程学习小助手"></a>初中编程学习小助手</h1><p> 扣子搭建智能体后界面太丑了，就给他挂个前端~<a href="https://github.com/HG-dev17/Program-helper">Program-helper</a></p><p><img src="/img/posts/program-helper/welcome.png" alt="初中编程学习小助手"></p><h1 id="一、为什么不是一个“万能答疑机器人”"><a href="#一、为什么不是一个“万能答疑机器人”" class="headerlink" title="一、为什么不是一个“万能答疑机器人”"></a>一、为什么不是一个“万能答疑机器人”</h1><p>初中生学编程，有许多困难：</p><ul><li>有的卡在<strong>概念</strong>——循环、条件、变量到底在干什么；</li><li>有的卡在<strong>报错</strong>——<code>IndentationError</code> 看不懂，代码跑不通就放弃了；</li><li>有的卡在<strong>选题</strong>——想做个小游戏，但不知道从哪下手；</li><li>还有一类不卡技术，只是<strong>没人陪着一起做</strong>。</li></ul><p>一个什么都会的AI，对前三类往往给得太快：直接甩一段能跑的代码，学生抄完就走，什么也没留下。</p><p>所以我把它拆成了四个角色，根据学生的情况会自动路由：</p><div class="table-container"><table><thead><tr><th>角色</th><th>定位</th><th>说话方式</th></tr></thead><tbody><tr><td>讲解员</td><td>讲知识点</td><td>打比方、一步步拆，不直接给答案</td></tr><tr><td>调试伙伴</td><td>陪找 bug</td><td>先问”你觉得哪一行不对”，再引导看报错</td></tr><tr><td>项目教练</td><td>带做小项目</td><td>拆步骤、定里程碑，控制难度</td></tr><tr><td>小码</td><td>同龄学习伙伴</td><td>一起吐槽、一起试错</td></tr></tbody></table></div><h1 id="二、令牌安全"><a href="#二、令牌安全" class="headerlink" title="二、令牌安全"></a>二、令牌安全</h1><p>受到平台的要求和数据的安全，扣子（Coze）的 PAT 不能写在前端 JS 里。</p><p><code>index.js</code> 里写一行 <code>const TOKEN = &quot;pat_xxx&quot;</code>，推到公开仓库，第二天额度就被别人跑光了。所以整个架构应该这样设计：<strong>浏览器永远拿不到令牌</strong>。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">浏览器  ──POST /api/chat（无令牌）──▶  Vercel Edge Function</span><br><span class="line">                                        │ COZE_PAT 存于环境变量</span><br><span class="line">                                        ▼</span><br><span class="line">                                  扣子 v3 Chat API</span><br><span class="line">                                        │</span><br><span class="line">                                        └─ SSE 流式 ─▶ 边收边透传给浏览器</span><br></pre></td></tr></table></figure><p>要点只有三条：</p><ol><li><code>COZE_PAT</code> 只存在平台的 Environment Variables 里，勾成 Secret；</li><li>前端只请求同域的 <code>/api/chat</code>，源码、F12、抓包都搜不到 <code>pat_</code>；</li><li><code>COZE_BOT_ID</code> 在服务端写死，别人没法拿你的代理去调别的智能体。</li></ol><p>仓库里给了三套代理，按部署习惯挑一个：</p><div class="table-container"><table><thead><tr><th>文件</th><th>平台</th><th>说明</th></tr></thead><tbody><tr><td><code>api/chat.js</code></td><td>Vercel Edge</td><td>和页面同域托管，最省事</td></tr><tr><td><code>worker.js</code></td><td>Cloudflare Worker</td><td>国际线路，需要绑自定义域名</td></tr><tr><td><code>deno-proxy.ts</code></td><td>Deno Deploy</td><td>国内访问相对稳</td></tr><tr><td><code>server.js</code></td><td>本地 / VPS</td><td>调试用，强制 IPv4 解析</td></tr></tbody></table></div><h1 id="三、国内网络"><a href="#三、国内网络" class="headerlink" title="三、国内网络"></a>三、国内网络</h1><p>因为vercel国内打不开，只能用自己的域名dns过去，用阿里云加一条 <code>coze-api</code> 的 CNAME。</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">类型    主机记录     记录值</span><br><span class="line">CNAME   coze-api    cname.vercel-dns.com（以 Vercel 页面给的为准）</span><br></pre></td></tr></table></figure><h1 id="四、前端页面文件"><a href="#四、前端页面文件" class="headerlink" title="四、前端页面文件"></a>四、前端页面文件</h1><p><code>index.html</code> 是单文件页面（无构建、无框架、无 CDN 依赖），大概 2100 行，做了这些事：</p><ul><li><strong>SSE 流式渲染</strong>：边收边显示，带”思考中 N 秒 / 已生成 N 秒”的计时</li><li><strong>代码块处理</strong>：流式输出时会遇到”代码块还没闭合”的半截状态，需要先当普通文本、闭合后再渲染成代码块，并给每块加复制按钮；</li><li><strong>历史对话</strong>：<code>localStorage</code> 存会话列表，切换时忽略空的助手气泡，恢复后自动滚到底部；</li><li><strong>学号固定身份</strong>：留空自动生成匿名标识，填了学号就固定下来，方便智能体记住”这是同一个人”；</li><li><strong>模式切换</strong>：默认走本站代理；也可以在设置里勾”使用我自己的令牌直连扣子”，消耗自己的额度；</li><li><strong>临时换代理</strong>：不想重新部署时，在网址后面加 <code>?proxy=https://别的代理</code> 就能切。</li></ul><p><strong>主题切换</strong>做了亮/暗两套 CSS 变量。</p><h1 id="五、错误码速查"><a href="#五、错误码速查" class="headerlink" title="五、错误码速查"></a>五、错误码速查</h1><p>调试阶段的几个错误：</p><div class="table-container"><table><thead><tr><th>提示</th><th>原因</th><th>处理</th></tr></thead><tbody><tr><td>错误 4015</td><td>智能体没发布到「Agent as API」</td><td>扣子 → 发布 → 渠道 → Agent as API</td></tr><tr><td>错误 401 / 4100</td><td>令牌无效、过期或无权限</td><td>重新生成 PAT 并更新平台 Secret</td></tr><tr><td>错误 404（代理模式）</td><td><code>proxyBase</code> 没配或路径不对</td><td>先访问 <code>/api/health</code> 自检</td></tr><tr><td>Failed to fetch</td><td>网络不通、校园网 IPv6 拦截、<code>workers.dev</code> 被墙</td><td>换网络 / 用 vercel 或自定义域名</td></tr></tbody></table></div><h1 id="六、上线清单"><a href="#六、上线清单" class="headerlink" title="六、上线清单"></a>六、上线清单</h1><ul><li>[ ] 吊销所有写进过前端的旧令牌，重新生成；</li><li>[ ] 新令牌只进平台 Secret，不进仓库；</li><li>[ ] <code>.gitignore</code> 里排除含明文令牌的演示文件；</li><li>[ ] <code>ALLOW_ORIGIN</code> 限制成自己的页面域名；</li><li>[ ] <code>COZE_BOT_ID</code> 服务端锁定；</li><li>[ ] 给 <code>/api/chat</code> 加每 IP 限流，防止额度被刷。</li></ul><h1 id="七、它现在能做什么"><a href="#七、它现在能做什么" class="headerlink" title="七、它现在能做什么"></a>七、它现在能做什么</h1><ul><li>学生打开网页就能聊，不用注册、不用装 App、不用填任何密钥；</li><li>电脑课、自习课、回家写作业都能用同一套入口；</li><li>老师不用维护服务器（Vercel 免费额度足够一个班用）；</li><li>想改提示词、改角色设定，在扣子后台改，前端不用重新部署。</li></ul><p>代码都在 <a href="https://github.com/HG-dev17/Program-helper">HG-dev17/Program-helper</a>，README 里写了从发布智能体到配 DNS 的完整步骤。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 教育技术学 </category>
+          
+          <category> 工具 </category>
+          
+          <category> AI </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 教育技术学 </tag>
+            
+            <tag> AI </tag>
+            
+            <tag> 智能体 </tag>
+            
+            <tag> 编程教学 </tag>
+            
+            <tag> 前端 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>一块旧安卓屏背后的全栈小工程</title>
+      <link href="/2026/04/23/yunqu/"/>
+      <url>/2026/04/23/yunqu/</url>
+      
+        <content type="html"><![CDATA[<p>三月份去实习帮云衢中学做了一套<strong>学生奖惩公示系统</strong>，跑在教学楼走廊的展示屏上。</p><p>普通的网页都好办，但因为那块屏是<strong>一台 Android 4.4 的老设备</strong>，导致很多新的前端方式都运用不上。</p><p>仓库：<a href="https://github.com/HG-dev17/yunqu">HG-dev17/yunqu</a> · 线上：<a href="https://yunqu.cookiesky.cn">yunqu.cookiesky.cn</a></p><h1 id="一、需求"><a href="#一、需求" class="headerlink" title="一、需求"></a>一、需求</h1><p>现实中要解决的事很简单：</p><ol><li>学校要<strong>公开表彰与批评</strong>，鼓励和警告学生的平时行为；</li><li>数据由德育处、年级处老师录，老师是不碰代码的，只能做后端；</li><li>换学期要能一键切换，历史记录要能查；</li><li>手机、旧平板、走廊那台老盒子，都得能打开。</li></ol><h1 id="二、技术选型"><a href="#二、技术选型" class="headerlink" title="二、技术选型"></a>二、技术选型</h1><p>第一版就定了：<strong>展示端是纯静态页，数据放 CSV。</strong></p><p>理由很实际：</p><ul><li>学校没有服务器，也没有人运维；</li><li>静态托管免费、不会挂；</li><li>CSV 用 Excel 和 WPS 都能打开，老师看得懂；</li><li>改一条记录 = 改一行文本，出问题能直接看出来。</li></ul><p>数据目录长这样：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data/</span><br><span class="line">├── semesters.csv          # 学期索引：key,name,start_date,end_date,file</span><br><span class="line">├── 2024-2025-1.csv        # 每学期一个记录文件</span><br><span class="line">├── 2024-2025-2.csv</span><br><span class="line">├── 2025-2026-1.csv</span><br><span class="line">├── 2025-2026-2.csv</span><br><span class="line">├── announcement.csv       # 公告（文本/图片/视频 + 适用年级）</span><br><span class="line">├── countdown.csv          # 倒计时配置</span><br><span class="line">├── img/  video/           # 公告附件</span><br></pre></td></tr></table></figure><p><code>semesters.csv</code> 可以定义新的学期：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">key,name,start_date,end_date,file</span><br><span class="line">current_semester,2025-2026学年第二学期,2026-02-17,2026-07-15,2025-2026-2.csv</span><br><span class="line">last_semester,2025-2026学年第一学期,2025-09-01,2026-01-20,2025-2026-1.csv</span><br></pre></td></tr></table></figure><p>页面按今天的日期落在哪个区间，自动判断“当前学期”，再加载对应文件。这样换学期只需要改一行日期。</p><h1 id="三、Android-4-4-的解决办法"><a href="#三、Android-4-4-的解决办法" class="headerlink" title="三、Android 4.4 的解决办法"></a>三、Android 4.4 的解决办法</h1><p>第一次上机测试就翻了：白屏、滚不动、按钮错位。</p><p>原因是——那台设备的内核老到<strong>没有 <code>fetch</code>，没有 <code>Promise</code>，没有 <code>async/await</code></strong>，连 <code>Array.prototype.forEach</code> 都要靠 polyfill 补。</p><p>于是整个 <code>js/script.js</code> 被改写成 <strong>ES5 + XHR 回调</strong>：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">forEach</span>) &#123;</span><br><span class="line">    <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">forEach</span> = <span class="keyword">function</span> (<span class="params">callback, thisArg</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> T, k;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">this</span> == <span class="literal">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;this is null or not defined&#x27;</span>);</span><br><span class="line">        <span class="comment">// ……标准 polyfill</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fetchText</span>(<span class="params">url, cb</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> xhr = <span class="keyword">new</span> <span class="title class_">XMLHttpRequest</span>();</span><br><span class="line">    xhr.<span class="title function_">open</span>(<span class="string">&#x27;GET&#x27;</span>, url, <span class="literal">true</span>);</span><br><span class="line">    xhr.<span class="property">onreadystatechange</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (xhr.<span class="property">readyState</span> === <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (xhr.<span class="property">status</span> &gt;= <span class="number">200</span> &amp;&amp; xhr.<span class="property">status</span> &lt; <span class="number">300</span>) <span class="title function_">cb</span>(<span class="literal">null</span>, xhr.<span class="property">responseText</span>);</span><br><span class="line">            <span class="keyword">else</span> <span class="title function_">cb</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;HTTP &#x27;</span> + xhr.<span class="property">status</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    xhr.<span class="title function_">send</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>这带来两个连锁问题：</p><ul><li><strong>回调地狱</strong>：学期索引 → 记录文件 → 公告 → 渲染，四层嵌套。解决办法是把每层拆成独立函数 + 一个 <code>cb</code> 参数，用命名函数而不是匿名嵌套；</li><li><strong>没有 <code>AbortController</code></strong>：滚动/切学期时没法取消旧请求，只能在回调里校验“这是不是当前学期”，过期结果直接丢弃。</li></ul><p>还有一个隐蔽的坑：<strong>BOM</strong>。Excel 另存的 CSV 是带 BOM 的 UTF-8，第一个字段会变成 <code>\ufeffkey</code>，对象取值永远 <code>undefined</code>。后来统一用：</p><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">stripBOM</span>(<span class="params">s</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> s &amp;&amp; s.<span class="title function_">charCodeAt</span>(<span class="number">0</span>) === <span class="number">0xFEFF</span> ? s.<span class="title function_">slice</span>(<span class="number">1</span>) : s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>服务器导出时也统一写 <code>encoding=&#39;utf-8-sig&#39;</code>。</p><h1 id="四、展示端"><a href="#四、展示端" class="headerlink" title="四、展示端"></a>四、展示端</h1><p>大屏场景和网页场景完全不同：<strong>没有鼠标、没有触摸、也没人管它</strong>。</p><p>所以做了这些：</p><ul><li><strong>奖惩榜自动滚动</strong>：整块列表匀速上移，到底部无缝回顶；</li><li><strong>公告栏自动轮播</strong>：多条公告按顺序播，可含图片和视频，视频播完自动下一条；</li><li><strong>暂停/重置</strong>：给维护老师留两个按钮，不被学生乱点；</li><li><strong>左右两栏</strong>：左奖惩、右公告，把 16:9 的屏用满（1.0.4.29 版本从上下布局改的）；</li><li><strong>倒计时</strong>：直接读 <code>countdown.csv</code>，中考倒计时按”天”刷新。</li></ul><p>自动滚动的实现没有用 CSS 动画（旧内核的 <code>transform</code> 动画会抖），而是 <strong>JS 定时器 + <code>translateY</code></strong>，速度可调（<code>scrollSpeed = 30</code>）。手动滚动模式后来又单独修了一轮，解决“滚动留白和抽动”——根因是间隙高度算错，回顶时跳了一格。</p><h1 id="五、公告栏"><a href="#五、公告栏" class="headerlink" title="五、公告栏"></a>五、公告栏</h1><p>公告最初只是一段文字，后来老师的需求一条条加上来：</p><div class="table-container"><table><thead><tr><th>版本</th><th>加了什么</th></tr></thead><tbody><tr><td>1.0.2.5</td><td>公告栏 + 公告管理界面</td></tr><tr><td>1.0.5.13</td><td>支持图片、视频；内容允许为空；图片点击放大</td></tr><tr><td>1.0.6.8</td><td>自动滚动、视频自动播放、按年级筛选</td></tr></tbody></table></div><p><code>announcement.csv</code> 就多了几列：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">text,grade,image,video,time</span><br><span class="line">&quot;眼保健操的管理提醒……&quot;,初三,,,2026-03-30</span><br><span class="line">,初二,goodclass.jpg,,2026-03-24</span><br></pre></td></tr></table></figure><p><code>text</code> 允许为空，只展示图片或视频——这一条看起来小，但它把”公告”从<strong>通知</strong>变成了<strong>展示板</strong>，老师可以直接贴流动红旗的照片。</p><h1 id="六、管理端与本地服务"><a href="#六、管理端与本地服务" class="headerlink" title="六、管理端与本地服务"></a>六、管理端与本地服务</h1><p>展示端是静态的，但录入需要一个能改数据的界面。</p><p><code>admin.html</code> 直接读写同一批 CSV（配合本地起服务），<code>all_semesters.html</code> 做跨学期汇总。</p><p>真正做“在线可编辑”时，才加了 <code>server.py</code>：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Flask + SQLite</span><br><span class="line">├── GET    /api/semesters</span><br><span class="line">├── POST   /api/records</span><br><span class="line">├── PUT    /api/records/&lt;id&gt;</span><br><span class="line">├── DELETE /api/records/&lt;id&gt;</span><br><span class="line">└── GET    /api/export/&lt;semester&gt;   # 导出回 CSV</span><br></pre></td></tr></table></figure><p>因为没有服务器，无法修改静态的网页，设计上选择了：<strong>数据库只做“编辑期的暂存”，最终导出CSV进行替换。</strong></p><p>老师改完点导出 → 写回 <code>data/*.csv</code> → 提交仓库 → 静态站自动更新。</p><p>还加了一个”从 CSV 导入数据库”的逻辑，并且判断”该学期是否已有数据，有就跳过”，避免每次重启把老师的编辑覆盖掉。</p><h1 id="七、版本日志"><a href="#七、版本日志" class="headerlink" title="七、版本日志"></a>七、版本日志</h1><p>我把每次改动都记在 README 里，从 <code>1.0.0.0</code> 到 <code>1.0.6.8</code>，一共三十多次提交。回头看，<strong>真正花时间的地方几乎都不是功能</strong>：</p><ul><li>兼容旧内核（3 次紧急修复）；</li><li>时间格式（<code>2026/3/18</code> 和 <code>2026-03-18</code> 混用导致筛选全空）；</li><li>缓存（旧浏览器必须手动刷新才更新，最后给资源加版本参数解决）；</li><li>删除数据时弹三次确认框（事件重复绑定）。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 编程语言 </category>
+          
+          <category> GXNU </category>
+          
+          <category> 工具 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> Flask </tag>
+            
+            <tag> JavaScript </tag>
+            
+            <tag> 校园 </tag>
+            
+            <tag> 全栈 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>2026年度目标</title>
       <link href="/2026/01/13/2026-goal/"/>
       <url>/2026/01/13/2026-goal/</url>
@@ -370,9 +444,9 @@
             
             <tag> 教育技术学 </tag>
             
-            <tag> Python </tag>
-            
             <tag> Github </tag>
+            
+            <tag> Python </tag>
             
         </tags>
       
@@ -450,9 +524,9 @@
       
       <categories>
           
-          <category> 加密 </category>
-          
           <category> 英语 </category>
+          
+          <category> 加密 </category>
           
           <category> GXNU </category>
           
@@ -570,9 +644,9 @@
           
           <category> 工具 </category>
           
-          <category> 音频 </category>
-          
           <category> AI </category>
+          
+          <category> 音频 </category>
           
       </categories>
       
@@ -618,9 +692,9 @@
       
         <tags>
             
-            <tag> CRAIC </tag>
-            
             <tag> Python </tag>
+            
+            <tag> CRAIC </tag>
             
             <tag> ROS </tag>
             
