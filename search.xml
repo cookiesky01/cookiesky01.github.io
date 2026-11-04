@@ -13,9 +13,9 @@
       
       <categories>
           
-          <category> 教育技术学 </category>
-          
           <category> 工具 </category>
+          
+          <category> 教育技术学 </category>
           
           <category> AI </category>
           
@@ -24,9 +24,9 @@
       
         <tags>
             
-            <tag> 教育技术学 </tag>
-            
             <tag> AI </tag>
+            
+            <tag> 教育技术学 </tag>
             
             <tag> 智能体 </tag>
             
@@ -50,11 +50,11 @@
       
       <categories>
           
+          <category> 工具 </category>
+          
           <category> 编程语言 </category>
           
           <category> GXNU </category>
-          
-          <category> 工具 </category>
           
       </categories>
       
@@ -208,9 +208,9 @@
       
         <tags>
             
-            <tag> Python </tag>
-            
             <tag> AI </tag>
+            
+            <tag> Python </tag>
             
             <tag> 大数据 </tag>
             
@@ -264,9 +264,9 @@
       
         <tags>
             
-            <tag> Python </tag>
-            
             <tag> AI </tag>
+            
+            <tag> Python </tag>
             
             <tag> 大数据 </tag>
             
@@ -524,11 +524,11 @@
       
       <categories>
           
-          <category> 英语 </category>
-          
           <category> 加密 </category>
           
           <category> GXNU </category>
+          
+          <category> 英语 </category>
           
       </categories>
       
@@ -557,9 +557,9 @@
       
       <categories>
           
-          <category> 英语 </category>
-          
           <category> GXNU </category>
+          
+          <category> 英语 </category>
           
       </categories>
       
@@ -644,9 +644,9 @@
           
           <category> 工具 </category>
           
-          <category> AI </category>
-          
           <category> 音频 </category>
+          
+          <category> AI </category>
           
       </categories>
       
@@ -797,20 +797,20 @@
       
       <categories>
           
-          <category> 编程语言 </category>
-          
           <category> 工具 </category>
+          
+          <category> 编程语言 </category>
           
       </categories>
       
       
         <tags>
             
-            <tag> Python </tag>
-            
             <tag> 工具 </tag>
             
             <tag> 黑科技 </tag>
+            
+            <tag> Python </tag>
             
             <tag> 网易云 </tag>
             
