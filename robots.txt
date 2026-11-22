@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+# 课程作业/演示页与搜索结果页不必被收录
+Disallow: /html/
+Disallow: /search.xml
+Disallow: /link/

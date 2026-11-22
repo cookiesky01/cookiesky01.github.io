@@ -1,21 +1,27 @@
+/* 炫彩字：实现照搬 source/html/count_time/daojishi.css 里的 .brinks */
 .brinks {
-    display:flex;
-    z-index:1;
+    display: flex;
+    z-index: 1;
     position: relative;
-    justify-content:center;
+    justify-content: center;
     font-weight: bold;
     background-image: linear-gradient( to left, orangered, orange, gold, lightgreen, cyan, dodgerblue, mediumpurple, hotpink, orangered);
-    background-size: 110vw;
+    /* 渐变图宽度 100vw；动画位移 -2000vw 正好走满 20 个周期，循环无缝 */
+    background-size: 100vw 100%;
+    background-repeat: repeat;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     -webkit-animation: rainbowan 60s linear infinite;
+    animation: rainbowan 60s linear infinite;
 }
+
 @-webkit-keyframes rainbowan {
     to {
         background-position: -2000vw;
     }
 }
+
 @keyframes rainbowan {
     to {
         background-position: -2000vw;

@@ -27,10 +27,10 @@
 //     time[4] = nol(second);
 //   }
 //   if ((Number(time[2])<22) && (Number(time[2])>7)){
-//     currentTimeHtml ="<img class='boardsign' src='https://img.shields.io/badge/HG的小屋-营业中-6adea8?style=social&logo=cakephp' title='距离百年老店也就差不到一百年~'><div id='runtime'>" + time[0] + ' YEAR ' + time[1] + ' DAYS ' + time[2] + ' : ' + time[3] + ' : ' + time[4] + '</div>';
+//     currentTimeHtml ="<img class='boardsign' src='/img/badge/boardsign-on.svg' title='距离百年老店也就差不到一百年~'><div id='runtime'>" + time[0] + ' YEAR ' + time[1] + ' DAYS ' + time[2] + ' : ' + time[3] + ' : ' + time[4] + '</div>';
 //   }
 //   else{
-//     currentTimeHtml ="<img class='boardsign' src='https://img.shields.io/badge/HG的小屋-打烊了-6adea8?style=social&logo=coffeescript' title='这个点了应该去睡觉啦，熬夜对身体不好哦'><div id='runtime'>" + time[0] + ' YEAR ' + time[1] + ' DAYS ' + time[2] + ' : ' + time[3] + ' : ' + time[4] + '</div>';
+//     currentTimeHtml ="<img class='boardsign' src='/img/badge/boardsign-off.svg' title='这个点了应该去睡觉啦，熬夜对身体不好哦'><div id='runtime'>" + time[0] + ' YEAR ' + time[1] + ' DAYS ' + time[2] + ' : ' + time[3] + ' : ' + time[4] + '</div>';
 //   }
 //   document.getElementById("workboard").innerHTML = currentTimeHtml;
 // }, 1000);
@@ -54,7 +54,9 @@ function createtime() {
         b = Math.round(g);
     1 == String(b).length && (b = "0" + b);
     let c = "";
-    c = s < 18 && s >= 9 ? `<img class='boardsign' src='https://img.shields.io/badge/HG的小窝-营业中-6adea8?style=social&logo=cakephp' title='打工仔想摆烂赚大钱~'><br> <div style="font-size:13px;font-weight:bold">报告！本站成功运行了 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i> <br> 旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀</div>` : `<img class='boardsign' src='https://img.shields.io/badge/HG的小屋-打烊了-6adea8?style=social&logo=coffeescript' title='这个点了应该去睡觉啦，熬夜对身体不好哦~'><br> <div style="font-size:13px;font-weight:bold">本站居然运行了 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i> <br> 旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀</div>`, document.getElementById("workboard") && (document.getElementById("workboard").innerHTML = c)
+    // 2026-11-18 修正：原来用运行时长的小时数 s 判断营业状态，导致早上也显示「打烊」；改用真实当前小时
+    var hour = new Date().getHours();
+    c = hour >= 9 && hour < 18 ? `<img class='boardsign' src='/img/badge/boardsign-on.svg' title='打工仔想摆烂赚大钱~'><br> <div style="font-size:13px;font-weight:bold">报告！本站成功运行了 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i> <br> 旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀</div>` : `<img class='boardsign' src='/img/badge/boardsign-off.svg' title='这个点了应该去睡觉啦，熬夜对身体不好哦~'><br> <div style="font-size:13px;font-weight:bold">本站居然运行了 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i> <br> 旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀</div>`, document.getElementById("workboard") && (document.getElementById("workboard").innerHTML = c)
 }
 setInterval((() => {
     createtime()

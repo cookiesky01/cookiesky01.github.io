@@ -21,8 +21,12 @@
   var LS_SHUFFLE = "cookiesky.player.shuffle";
   var LS_REPEAT = "cookiesky.player.repeat";
   var LS_DOWNLOAD_URLS = "cookiesky.player.downloadUrls.v1";
+  // 与博客共用昼夜偏好：theme 存 {value, expiry}，isDark 存 "1"/"0"
+  var LS_THEME = "theme";
+  var LS_IS_DARK = "isDark";
+  var THEME_META = { dark: "#070c14", light: "#eef6ff" };
   var DOWNLOAD_URL_TTL = 12 * 60 * 60 * 1000;
-  var FETCH_TIMEOUT = 9000;
+  var FETCH_TIMEOUT = 12000;
   var SONG_TIMEOUT = 25000;
 
   var state = {
@@ -146,7 +150,7 @@
       "search", "importBtn", "localFileBtn", "importModal", "closeModal",
       "importInput", "importConfirm", "useDefault", "fileInput", "toast",
       "addModeModal", "addCount", "addAppend", "addReplace", "closeAddMode",
-      "downloadAllBtn", "downloadAllText", "downloadCurrentBtn"
+      "downloadAllBtn", "downloadAllText", "downloadCurrentBtn", "themeBtn"
     ].forEach(function (id) {
       els[id] = $(id);
     });
@@ -179,6 +183,36 @@
     }, 2800);
   }
 
+  function currentTheme() {
+    return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  }
+
+  function syncThemeMeta() {
+    var dark = currentTheme() === "dark";
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", dark ? THEME_META.dark : THEME_META.light);
+    if (els.themeBtn) {
+      els.themeBtn.title = dark ? "切换到白天模式（蓝白）" : "切换到夜间模式（蓝黑）";
+    }
+  }
+
+  function applyTheme(mode) {
+    var dark = mode !== "light";
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    syncThemeMeta();
+    try {
+      localStorage.setItem(LS_THEME, JSON.stringify({
+        value: dark ? "dark" : "light",
+        expiry: Date.now() + 2 * 86400000
+      }));
+      localStorage.setItem(LS_IS_DARK, dark ? "1" : "0");
+    } catch (err) {}
+  }
+
+  function toggleTheme() {
+    applyTheme(currentTheme() === "dark" ? "light" : "dark");
+  }
+
   function normalizeTracks(list) {
     return (Array.isArray(list) ? list : [])
       .filter(function (item) {
@@ -199,15 +233,19 @@
   }
 
   function buildApiUrl(source, api) {
+    var base = api || activeApi;
     if (source.kind === "netease") {
-      return (api || activeApi) + "?server=netease&type=playlist&id=" + encodeURIComponent(source.id) + "&r=" + Date.now();
+      return base + "?server=netease&type=playlist&id=" + encodeURIComponent(source.id) + "&r=" + Date.now();
+    }
+    if (source.kind === "netease-song") {
+      return base + "?server=netease&type=song&id=" + encodeURIComponent(source.id) + "&r=" + Date.now();
     }
     return source.url;
   }
 
   function fetchPlaylistWithMirrors(source) {
-    if (source.kind !== "netease") {
-      return fetchJson(source.url).then(readTrackArray);
+    if (source.kind !== "netease" && source.kind !== "netease-song") {
+      return fetchJsonRetry(source.url).then(readTrackArray);
     }
 
     // 多个接口同时请求，谁先成功用谁的，避免一个接口卡住整页
@@ -258,6 +296,7 @@
 
   function sourceLabel(source) {
     if (source.kind === "netease") return "网易云";
+    if (source.kind === "netease-song") return "网易云单曲";
     if (source.kind === "snapshot") return "网易云";
     if (source.kind === "files") return "本地文件";
     return "Meting";
@@ -265,6 +304,7 @@
 
   function sourceChipText(source) {
     if (source.kind === "netease") return "网易云歌单";
+    if (source.kind === "netease-song") return "网易云单曲";
     if (source.kind === "snapshot") return "网易云歌单";
     if (source.kind === "files") return "本地文件";
     return "导入歌单";
@@ -272,6 +312,7 @@
 
   function defaultSourceName(source) {
     if (source.kind === "netease") return "网易云歌单 " + source.id;
+    if (source.kind === "netease-song") return "网易云单曲 " + source.id;
     if (source.kind === "snapshot") return "默认歌单";
     if (source.kind === "files") return "本地音乐";
     return "导入歌单";
@@ -324,6 +365,9 @@
 
     return fetchTracks(source)
       .then(function (tracks) {
+        if (source.kind === "netease-song") {
+          source.name = "单曲 · " + tracks[0].name;
+        }
         saveCache(source, tracks);
 
         if (silent && state.playlist.length) {
@@ -353,7 +397,8 @@
       .catch(function (err) {
         console.error("[player]", err);
         if (silent) return false;
-        toast("歌单加载失败：" + err.message);
+        var reason = err && err.name === "AbortError" ? "请求超时，请检查网络后重试" : (err && err.message) || "网络异常";
+        toast("歌单加载失败：" + reason);
         if (!state.playlist.length) {
           els.title.textContent = "歌单加载失败";
           els.artist.textContent = "点一下播放按钮可以重试，也可以导入其他歌单";
@@ -400,7 +445,14 @@
     });
     var active = els.trackList.querySelector(".track-item.active");
     if (active) {
-      active.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      // 只滚歌单自身，别把整页带着跳走（移动端首屏会滚掉顶栏）
+      var listRect = els.trackList.getBoundingClientRect();
+      var itemRect = active.getBoundingClientRect();
+      if (itemRect.top < listRect.top) {
+        els.trackList.scrollTop -= listRect.top - itemRect.top;
+      } else if (itemRect.bottom > listRect.bottom) {
+        els.trackList.scrollTop += itemRect.bottom - listRect.bottom;
+      }
     }
   }
 
@@ -544,6 +596,9 @@
     var url = "";
     if (source.kind === "netease") {
       url = activeApi + "?server=netease&type=playlist&id=" +
+        encodeURIComponent(source.id) + "&r=" + Date.now();
+    } else if (source.kind === "netease-song") {
+      url = activeApi + "?server=netease&type=song&id=" +
         encodeURIComponent(source.id) + "&r=" + Date.now();
     } else if (source.kind === "snapshot") {
       url = activeApi + "?server=netease&type=playlist&id=" +
@@ -953,22 +1008,32 @@
   }
 
   function parseImport(value) {
-    var input = value.trim();
+    var input = (value || "").trim();
     if (!input) return null;
 
-    var idMatch = input.match(/[?&#]id=(\d+)/);
+    // 网易云 App 分享出来的是整段文字，先从里面抠出链接
+    var urlMatch = input.match(/https?:\/\/[^\s"'<>，。]+/i);
+    var target = urlMatch ? urlMatch[0] : input;
+
+    if (/163cn\.tv/i.test(target)) return { kind: "short" };
+
+    var idMatch = target.match(/[?&#]id=(\d+)/) || input.match(/[?&#]id=(\d+)/);
+    var songMatch = target.match(/\/song\/(\d+)/i);
+    var isSong = /\/song\b/i.test(target) && !/\/playlist\b/i.test(target);
+
+    if (/[?&]type=song\b/i.test(target) && idMatch) return { kind: "netease-song", id: idMatch[1] };
+    if (songMatch) return { kind: "netease-song", id: songMatch[1] };
+    if (isSong && idMatch) return { kind: "netease-song", id: idMatch[1] };
     if (idMatch) return { kind: "netease", id: idMatch[1] };
 
-    if (/^\d{5,}$/.test(input)) return { kind: "netease", id: input };
+    if (/^\d{5,}$/.test(target)) return { kind: "netease", id: target };
 
-    if (/^https?:\/\//i.test(input)) {
-      if (/music\.163\.com/i.test(input)) {
-        var m = input.match(/id=(\d+)/);
-        if (m) return { kind: "netease", id: m[1] };
-      }
-      if (/\.json(\?|$)/i.test(input)) return { kind: "json", url: input };
-      if (/api\.i-meto\.com|type=playlist|meting/i.test(input)) {
-        return { kind: "meting", url: input };
+    if (/^https?:\/\//i.test(target)) {
+      var playlistMatch = target.match(/\/playlist\/(\d+)/i);
+      if (playlistMatch) return { kind: "netease", id: playlistMatch[1] };
+      if (/\.json(\?|$)/i.test(target)) return { kind: "json", url: target };
+      if (/api\.i-meto\.com|type=playlist|type=song|meting/i.test(target)) {
+        return { kind: "meting", url: target };
       }
     }
 
@@ -999,7 +1064,11 @@
   function importPlaylist() {
     var source = parseImport(els.importInput.value);
     if (!source) {
-      toast("格式不对，请输入歌单 ID、歌单链接或 Meting 歌单 API");
+      toast("格式不对，请输入歌单 ID、歌单/单曲链接或 Meting 歌单 API");
+      return;
+    }
+    if (source.kind === "short") {
+      toast("短链读不到歌单号，请在网易云打开后复制含 id 的完整链接或歌单 ID");
       return;
     }
     if (source.kind === "json") {
@@ -1125,6 +1194,7 @@
     els.downloadCurrentBtn.addEventListener("click", function () {
       downloadTrack(currentTrack(), els.downloadCurrentBtn);
     });
+    els.themeBtn.addEventListener("click", toggleTheme);
 
     els.progress.addEventListener("input", function () {
       var duration = audio.duration;
@@ -1278,6 +1348,7 @@
 
   function init() {
     cacheEls();
+    syncThemeMeta();
     bindEvents();
     restorePreferences();
     restoreDownloadUrls();
@@ -1299,8 +1370,17 @@
     }
 
     state.loading = true;
-    loadSource(source, !saved).then(function () {
+    loadSource(source, !saved).then(function (ok) {
       state.loading = false;
+      if (ok || !saved || sourceKey(source) === sourceKey(DEFAULT_SOURCE)) return;
+      // 之前导入的歌单可能已经失效/接口临时不可用，回退默认歌单，别让整页卡在报错上
+      state.loading = true;
+      loadSource(DEFAULT_SOURCE, false).then(function (fallbackOk) {
+        state.loading = false;
+        if (!fallbackOk) return;
+        saveSource(DEFAULT_SOURCE);
+        toast("原歌单加载失败，已切回默认歌单（可重新导入）");
+      });
     });
   }
 

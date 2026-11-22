@@ -1,89 +1,94 @@
-if (window.localStorage.getItem("fpson") == undefined || window.localStorage.getItem("fpson") == "1") {
-    var rAF = function () {
-        return (
-            window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            function (callback) {
-                window.setTimeout(callback, 1000 / 60);
-            }
-        );
-    }();
-    var frame = 0;
-    var lastTime = performance.now();
-    // 首屏解析脚本、解码图片、首次绘制会天然掉帧，
-    // 前 2 秒不计入结果，避免误报「电竞级帧率」
-    var warmupUntil = lastTime + 2000;
-    var lowCount = 0;
-    var goodCount = 0;
-    var lowPerf = false;
+/* 帧率检测（fomal 样式 + 本站低性能模式）
+   显示结构：<span class="fps-label">FPS</span><span class="fps-value">240</span><span class="fps-state" data-state="good">流畅</span>
+   fpson='1' 开启、'0' 关闭；面板里的「帧率监测」调 window.fpsSwitch(on)。 */
+(function () {
+  var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function (cb) {
+    return window.setTimeout(cb, 1000 / 60);
+  };
+  var node = null;
+  var frame = 0;
+  var lastTime = performance.now();
+  var warmupUntil = lastTime + 2000; // 首屏解析/解码天然掉帧，前 2 秒不计
+  var lowCount = 0;
+  var goodCount = 0;
+  var lowPerf = false;
+  var lastFp = -1;
+  var lastState = '';
+  var running = false;
 
-    var setLowPerf = function (on) {
-        if (lowPerf === on) return;
-        lowPerf = on;
-        document.documentElement.classList.toggle("low-perf", on);
-    };
+  function setLowPerf (on) {
+    if (lowPerf === on) return;
+    lowPerf = on;
+    document.documentElement.classList.toggle('low-perf', on);
+  }
 
-    var loop = function (now) {
-        now = now || performance.now();
-        frame++;
+  // fomal 的六档：极低/卡顿/偏低/一般/顺畅/流畅
+  function stateOf (fps) {
+    if (fps <= 5) return ['极低', 'low'];
+    if (fps <= 15) return ['卡顿', 'low'];
+    if (fps <= 25) return ['偏低', 'warn'];
+    if (fps < 35) return ['一般', 'warn'];
+    if (fps <= 45) return ['顺畅', 'good'];
+    return ['流畅', 'good'];
+  }
 
-        var elapsed = now - lastTime;
-        if (elapsed < 1000) {
-            rAF(loop);
-            return;
-        }
+  function write (fps, status, state) {
+    if (!node) node = document.getElementById('fps');
+    if (!node) return;
+    var key = fps + '|' + state;
+    if (key === lastState) return;
+    lastState = key;
+    node.innerHTML = '<span class="fps-label">FPS</span><span class="fps-value">' + fps +
+      '</span><span class="fps-state" data-state="' + state + '">' + status + '</span>';
+  }
 
-        var fps = Math.round((frame * 1000) / elapsed);
-        frame = 0;
-        lastTime = now;
-
-        if (now < warmupUntil) {
-            rAF(loop);
-            return;
-        }
-
-        if (fps <= 5) {
-            var kd = `<span style="color:#bd0000">卡成ppt🤢</span>`
-        } else if (fps <= 15) {
-            var kd = `<span style="color:red">电竞级帧率😖</span>`
-        } else if (fps <= 25) {
-            var kd = `<span style="color:orange">有点难受😨</span>`
-        } else if (fps < 35) {
-            var kd = `<span style="color:#9338e6">不太流畅🙄</span>`
-        } else if (fps <= 45) {
-            var kd = `<span style="color:#08b7e4">还不错哦😁</span>`
-        } else {
-            var kd = `<span style="color:#39c5bb">十分流畅🤣</span>`
-        }
-        document.getElementById("fps").innerHTML = `FPS:${fps} ${kd}`;
-
-        // 连续 3 秒低于 30 帧：开启低性能模式（停装饰动画、关毛玻璃）
-        // 连续 5 秒回到 50 帧以上：恢复效果
-        if (fps < 30) {
-            lowCount++;
-            goodCount = 0;
-        } else if (fps >= 50) {
-            goodCount++;
-            lowCount = 0;
-        } else {
-            lowCount = 0;
-            goodCount = 0;
-        }
-        if (lowCount >= 3) setLowPerf(true);
+  function loop (now) {
+    if (!running) return;
+    now = now || performance.now();
+    frame++;
+    var elapsed = now - lastTime;
+    if (elapsed >= 1000) {
+      var fps = Math.round((frame * 1000) / elapsed);
+      frame = 0;
+      lastTime = now;
+      if (now >= warmupUntil) {
+        var st = stateOf(fps);
+        write(fps, st[0], st[1]);
+        if (fps < 35) { lowCount++; goodCount = 0; } else if (fps >= 50) { goodCount++; lowCount = 0; } else { lowCount = 0; goodCount = 0; }
+        if (lowCount >= 2) setLowPerf(true);
         if (goodCount >= 5) setLowPerf(false);
-
-        rAF(loop);
+      }
     }
+    rAF(loop);
+  }
 
-    // 切回标签页时重新计时，避免把后台休眠的时间算成掉帧
-    document.addEventListener("visibilitychange", function () {
-        if (!document.hidden) {
-            frame = 0;
-            lastTime = performance.now();
-        }
-    });
+  function start () {
+    if (running) return;
+    running = true;
+    frame = 0;
+    lastTime = performance.now();
+    warmupUntil = lastTime + 1200;
+    lastState = '';
+    if (node) node.style.display = '';
+    rAF(loop);
+  }
 
-    loop(lastTime);
-} else {
-    document.getElementById("fps").style = "display:none!important"
-}
+  function stop () {
+    running = false;
+    lastState = '';
+    setLowPerf(false);
+    if (node) {
+      node.innerHTML = '';
+      node.style.display = 'none';
+    }
+  }
+
+  window.fpsSwitch = function (on) {
+    window.localStorage.setItem('fpson', on ? '1' : '0');
+    if (on) start(); else stop();
+  };
+
+  document.addEventListener('visibilitychange', function () { if (document.hidden) running = false; else if (window.localStorage.getItem('fpson') !== '0') start(); });
+
+  if (window.localStorage.getItem('fpson') !== '0') start();
+})();

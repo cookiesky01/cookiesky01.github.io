@@ -8,14 +8,13 @@
   "use strict";
 
   var PLAYLIST_ID = "2331639478";
+  // 只保留实测可用的接口：qjqq.cn 403、injahow.cn 404，会在控制台报 CORS 错误
   var APIS = [
-    "https://api.i-meto.com/meting/api",
-    "https://meting.qjqq.cn/api",
-    "https://api.injahow.cn/meting/api"
+    "https://api.i-meto.com/meting/api"
   ];
   var OUTER_URL = "https://music.163.com/song/media/outer/url?id=";
   var FALLBACK_COVER = "/img/HG.JPG";
-  var CACHE_KEY = "cookiesky.navmusic.playlist.v1";
+  var CACHE_KEY = "cookiesky.navmusic.playlist.v2";
   var CACHE_TTL = 6 * 60 * 60 * 1000;
   var FETCH_TIMEOUT = 10000;
   var CONTAINER_ID = "nav-music";
@@ -181,6 +180,13 @@
   }
 
   function build(tracks) {
+    if (window.__navMusicPlayer) return;
+    // 不再预探测封面：逐张探测会额外产生上百个请求（Edge 下明显卡顿），
+    // 且网易云封面在多数网络下能正常加载，直接用真实封面即可。
+    buildNow(tracks);
+  }
+
+  function buildNow(tracks) {
     if (window.__navMusicPlayer) return;
     var container = document.getElementById(CONTAINER_ID);
     if (!container || typeof window.APlayer === "undefined" || !tracks.length) return;

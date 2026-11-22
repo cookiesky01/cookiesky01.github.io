@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="我的第一台服务器：腾讯云轻量应用服务器、宝塔面板与 Nginx 自建环境">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#07101F"/>
+      <stop offset="100%" stop-color="#122A45"/>
+    </linearGradient>
+    <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5EA6E5" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#5EA6E5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1B3554"/>
+      <stop offset="100%" stop-color="#0E2038"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1070" cy="90" r="330" fill="url(#g1)"/>
+  <circle cx="700" cy="620" r="300" fill="url(#g2)"/>
+
+  <rect x="76" y="62" width="64" height="8" rx="4" fill="#5EA6E5"/>
+  <text x="156" y="74" font-family="Consolas, 'Courier New', monospace" font-size="19" letter-spacing="1" fill="#94A9C6">MY-YUN · SELF-HOSTED</text>
+
+  <text x="76" y="214" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="62" font-weight="700" fill="#FFFFFF">我的第一台服务器</text>
+  <text x="76" y="296" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="62" font-weight="700" fill="#93C5FD">从托管走向自建</text>
+  <text x="78" y="366" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="26" fill="#B2C3DD">腾讯云轻量应用服务器 · 宝塔面板 · Nginx</text>
+  <text x="78" y="406" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="20" fill="#8FA6C6">2核4G / 70GB / 600GB 月流量，3 年 528 元的小小起点</text>
+
+  <g font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="19" fill="#D2E2F8">
+    <rect x="78" y="446" width="118" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="100" y="473">2核4G</text>
+    <rect x="208" y="446" width="118" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="230" y="473">宝塔面板</text>
+    <rect x="338" y="446" width="96" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="360" y="473">Nginx</text>
+    <rect x="446" y="446" width="118" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.07" stroke="#78A0DC" stroke-opacity="0.55"/>
+    <text x="468" y="473">ICP 备案</text>
+  </g>
+
+  <text x="78" y="552" font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#6E8AAE">$ uptime  ·  first boot 2026-11-10</text>
+
+  <!-- 右侧：云 + 服务器机架 -->
+  <g stroke="#5EA6E5" stroke-opacity="0.45" stroke-width="2" fill="none">
+    <path d="M940 148 C 902 148 884 176 884 196 C 856 200 842 220 842 244 C 842 272 866 290 896 290 H 1040 C 1072 290 1092 268 1092 242 C 1092 216 1072 196 1046 194 C 1042 166 1018 148 990 148 Z" fill="#132C49" fill-opacity="0.85"/>
+    <path d="M968 290 V 336" stroke-dasharray="7 7"/>
+    <path d="M900 306 H 1036" stroke-dasharray="7 7"/>
+  </g>
+  <text x="898" y="232" font-family="'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif" font-size="25" font-weight="700" fill="#CFE4FA">轻量云</text>
+  <text x="898" y="262" font-family="Consolas, 'Courier New', monospace" font-size="16" fill="#7FA9CE">LIGHTHOUSE · CN</text>
+
+  <g>
+    <rect x="812" y="336" width="308" height="216" rx="16" fill="url(#rack)" stroke="#5EA6E5" stroke-width="3"/>
+    <g font-family="Consolas, 'Courier New', monospace" font-size="15">
+      <rect x="832" y="354" width="268" height="48" rx="8" fill="#1E3B5E"/>
+      <circle cx="854" cy="378" r="7" fill="#34D399"/>
+      <text x="874" y="384" fill="#BBD4EF">nginx.service</text>
+      <rect x="1020" y="370" width="62" height="16" rx="8" fill="#34D399" fill-opacity="0.18"/>
+      <text x="1028" y="383" fill="#34D399">80/443</text>
+
+      <rect x="832" y="412" width="268" height="48" rx="8" fill="#1E3B5E"/>
+      <circle cx="854" cy="436" r="7" fill="#34D399"/>
+      <text x="874" y="442" fill="#BBD4EF">bt-panel</text>
+      <rect x="1020" y="428" width="62" height="16" rx="8" fill="#5EA6E5" fill-opacity="0.18"/>
+      <text x="1028" y="441" fill="#93C5FD">ready</text>
+
+      <rect x="832" y="470" width="268" height="48" rx="8" fill="#1E3B5E"/>
+      <circle cx="854" cy="494" r="7" fill="#FBBF24"/>
+      <text x="874" y="500" fill="#BBD4EF">hexo blog</text>
+      <rect x="1020" y="486" width="62" height="16" rx="8" fill="#FBBF24" fill-opacity="0.18"/>
+      <text x="1026" y="499" fill="#FBBF24">待上线</text>
+    </g>
+  </g>
+
+  <g stroke="#5EA6E5" stroke-opacity="0.35" stroke-width="2">
+    <line x1="1120" y1="336" x2="1120" y2="552"/>
+    <line x1="1120" y1="552" x2="596" y2="552"/>
+  </g>
+</svg>

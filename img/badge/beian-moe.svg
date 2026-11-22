@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="133" height="20" role="img" aria-label="萌ICP备: 20242658号">
+<title>萌ICP备: 20242658号</title>
+<linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
+<clipPath id="r"><rect width="133" height="20" rx="3" fill="#fff"/></clipPath>
+<g clip-path="url(#r)"><rect width="57" height="20" fill="#7a3a63"/><rect x="57" width="77" height="20" fill="#f838b2"/><rect width="133" height="20" fill="url(#s)"/></g>
+<g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,PingFang SC,Microsoft YaHei,sans-serif" font-size="11">
+<text x="28.3" y="15" fill="#010101" fill-opacity=".3">萌ICP备</text><text x="28.3" y="14">萌ICP备</text>
+<text x="94.9" y="15" fill="#010101" fill-opacity=".3">20242658号</text><text x="94.9" y="14">20242658号</text>
+</g></svg>

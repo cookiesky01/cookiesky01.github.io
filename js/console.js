@@ -52,7 +52,7 @@ function createtime2() {
             "color:white; background-color:#10bcc0",
             "",
             "",
-            'background:url("https://unpkg.zhimg.com/anzhiyu-assets@latest/image/common/tinggge.gif") no-repeat;font-size:450%'
+            "font-size:100%"
         )
     );
 
