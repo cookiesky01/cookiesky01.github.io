@@ -1,6 +1,22 @@
 User-agent: *
 Allow: /
-# 课程作业/演示页与搜索结果页不必被收录
+
+# 不允许访问的内容
 Disallow: /html/
 Disallow: /search.xml
 Disallow: /link/
+
+Disallow: /img/
+Disallow: /js/
+Disallow: /css/
+Disallow: /*.js
+Disallow: /*.css
+
+Sitemap: https://cookiesky.cn/sitemap.xml
+Sitemap: https://cookiesky01.github.io/sitemap.xml
+Sitemap: https://vercel.cookiesky.cn/sitemap.xml
+Sitemap: https://github.cookiesky.cn/sitemap.xml
+Sitemap: https://cookiesky.cn/baidusitemap.xml
+Sitemap: https://cookiesky01.github.io/baidusitemap.xml
+Sitemap: https://vercel.cookiesky.cn/baidusitemap.xml
+Sitemap: https://github.cookiesky.cn/baidusitemap.xml
